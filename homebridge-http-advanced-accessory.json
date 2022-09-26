@@ -1,0 +1,47 @@
+{
+    "accessory": "HttpAdvancedAccessory",
+    "service": "GarageDoorOpener",
+    "name": "Garage Door",
+    "forceRefreshDelay": 5,
+    "username": "admin",
+    "password": "admin",
+    "debug": false,
+    "urls": {
+        "getCurrentDoorState": {
+            "url": "http://192.168.2.13/?getstatus",
+            "mappers": [
+                {
+                    "type": "jpath",
+                    "parameters": {
+                        "jpath": "$.currentState",
+                        "index": 0
+                    }
+                }
+            ]
+        },
+        "getTargetDoorState": {
+            "url": "http://192.168.2.13/?getstatus",
+            "mappers": [
+                {
+                    "type": "jpath",
+                    "parameters": {
+                        "jpath": "$.targetState",
+                        "index": 0
+                    }
+                }
+            ]
+        },
+        "setTargetDoorState": {
+            "url": "http://192.168.2.13/?${value==0?'open':'close'}",
+            "mappers": [
+                {
+                    "type": "jpath",
+                    "parameters": {
+                        "jpath": "$.targetState",
+                        "index": 0
+                    }
+                }
+            ]
+        }
+    }
+}
