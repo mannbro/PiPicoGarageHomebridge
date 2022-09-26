@@ -8,7 +8,7 @@
     "debug": false,
     "urls": {
         "getCurrentDoorState": {
-            "url": "http://192.168.2.13/?getstatus",
+            "url": "http://YOUR_PI_PICO/?getstatus",
             "mappers": [
                 {
                     "type": "jpath",
@@ -20,7 +20,7 @@
             ]
         },
         "getTargetDoorState": {
-            "url": "http://192.168.2.13/?getstatus",
+            "url": "http://YOUR_PI_PICO/?getstatus",
             "mappers": [
                 {
                     "type": "jpath",
@@ -32,7 +32,7 @@
             ]
         },
         "setTargetDoorState": {
-            "url": "http://192.168.2.13/?${value==0?'open':'close'}",
+            "url": "http://YOUR_PI_PICO/?${value==0?'open':'close'}",
             "mappers": [
                 {
                     "type": "jpath",
