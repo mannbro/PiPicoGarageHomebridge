@@ -30,6 +30,7 @@ In order to connect the Pi Pico to Homebridge, I'm using the HTTP Advanced Acces
 
 You can find the plugin here: https://github.com/staromeste/homebridge-http-advanced-accessory
 
-This plugin is very powerful, but not very user friendly as it needs to be configured using JSON so that it can talk to and understand the accessory.
+This plugin is very powerful, but not very user friendly as it needs to be configured using JSON to talk to and understand accessories.
 
-A working configuration file is included in this repository. Just copy and paste the contents into the plugin configuration. The only thing you need to do is replace YOUR_PI_PICO with the IP-address of your device.
+But don't despair. I included a working configuration file in this repository. Just copy and paste the contents into the plugin configuration. The only thing you need to do is replace "YOUR_PI_PICO" with the IP-address of your device.
+
