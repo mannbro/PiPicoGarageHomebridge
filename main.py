@@ -4,10 +4,13 @@ import time
 from uselect import select
 from machine import Pin
 
-
+#WiFi Settings. Change these before uploading to the Pi Pico
+WIFI_SSID = 'XXXXX'
+WIFI_PASSWORD = 'XXXXX'
+    
 #Set up pins
-CLOSED_PIN=19
-OPEN_PIN=20
+OPEN_PIN=19
+CLOSED_PIN=20
 RELAY_PIN=21
 
 #Pulse length in ms
@@ -16,15 +19,20 @@ PULSE_LENGTH=500
 #Homekit target and current states
 TARGET_DOOR_STATE_OPEN=0
 TARGET_DOOR_STATE_CLOSED=1
-CURRENT_DOOR_STATE_OPEN = 0;
-CURRENT_DOOR_STATE_CLOSED = 1;
-CURRENT_DOOR_STATE_OPENING = 2;
-CURRENT_DOOR_STATE_CLOSING = 3;
-CURRENT_DOOR_STATE_STOPPED = 4;
+CURRENT_DOOR_STATE_OPEN = 0
+CURRENT_DOOR_STATE_CLOSED = 1
+CURRENT_DOOR_STATE_OPENING = 2
+CURRENT_DOOR_STATE_CLOSING = 3
+CURRENT_DOOR_STATE_STOPPED = 4
+
+
+IGNORE_SENSORS_AFTER_ACTION_FOR_SECONDS=5
 
 #Set initial target and current states
 targetState=TARGET_DOOR_STATE_CLOSED
-currentState=CURRENT_DOOR_STATE_CLOSED
+currentState=CURRENT_DOOR_STATE_STOPPED
+
+lastDoorAction=time.time()
 
 #Setup pins for relay and sensors
 relay = Pin(RELAY_PIN, Pin.OUT)
@@ -37,12 +45,9 @@ wifi = network.WLAN(network.STA_IF)
 def connectWifi():
     global wlan
 
-    ssid = 'XXXXXXXX'
-    password = 'XXXXXXXX'
-
     wifi = network.WLAN(network.STA_IF)
     wifi.active(True)
-    wifi.connect(ssid, password)
+    wifi.connect(WIFI_SSID, WIFI_PASSWORD)
 
     max_wait = 10
     while wifi.status() != 3:
@@ -68,11 +73,11 @@ print('listening on', addr)
 def startDoor(newTargetState):
     global targetState
     global currentState
+    global lastDoorAction
     
     targetState=newTargetState
+    lastDoorAction=time.time()
 
-
-    print('startDoor', targetState, currentState)
 
     relay.value(1)
     time.sleep_ms(PULSE_LENGTH)
@@ -80,6 +85,8 @@ def startDoor(newTargetState):
 
     setCurrentState()
 
+    print('startDoor', targetState, currentState)
+    
     return getDoorStatus()
 
 def setCurrentState():
@@ -90,19 +97,33 @@ def setCurrentState():
 
     print("openSensor", openSensor.value())
     print("closedSensor", closedSensor.value())
-    
-    if(openSensor.value()==0):
-        currentState=CURRENT_DOOR_STATE_OPEN
-        targetState=TARGET_DOOR_STATE_OPEN
-    elif(closedSensor.value()==0):
+    print("Seconds since last action: "+str(time.time()-lastDoorAction))
+    print(lastDoorAction, IGNORE_SENSORS_AFTER_ACTION_FOR_SECONDS, time.time())
+
+    #Ignore sensors after having started the door for a few seconds to give the door enough time to move away from the sensor
+    actionThresholdReached=time.time()>lastDoorAction+IGNORE_SENSORS_AFTER_ACTION_FOR_SECONDS
+    print('actionThresholdReached', actionThresholdReached)
+
+    #If threshold is reached and door is fully open
+    if actionThresholdReached and openSensor.value()==0:
+            print('setCurrentState', 'openSensor.value()==0')
+            currentState=CURRENT_DOOR_STATE_OPEN
+            targetState=TARGET_DOOR_STATE_OPEN
+            
+    #If threshold is reached and door is fully closed
+    elif actionThresholdReached and closedSensor.value()==0:
+        print('setCurrentState', 'closedSensor.value()==0')
         currentState=CURRENT_DOOR_STATE_CLOSED
         targetState=TARGET_DOOR_STATE_CLOSED
-    elif targetState==TARGET_DOOR_STATE_OPEN:
-        currentState=CURRENT_DOOR_STATE_OPENING
-    elif targetState==TARGET_DOOR_STATE_CLOSED:
-        currentState=CURRENT_DOOR_STATE_CLOSING
+            
+    #Threshold has not been reached or door is neither fully open or closed
     else:
-        currentState=CURRENT_DOOR_STATE_STOPPED
+
+        #Set current state based on intention (target state)
+        if targetState==TARGET_DOOR_STATE_OPEN:
+            currentState=CURRENT_DOOR_STATE_OPENING
+        elif targetState==TARGET_DOOR_STATE_CLOSED:
+            currentState=CURRENT_DOOR_STATE_CLOSING
 
 def getDoorStatus():
     global targetState
@@ -131,7 +152,7 @@ def handleRequest(conn, address):
         response=startDoor(TARGET_DOOR_STATE_OPEN)
     elif request.find('/?close')==6:
         response=startDoor(TARGET_DOOR_STATE_CLOSED)
-    elif request.find('/?getstatus')==6:
+    elif request.find(' ')==6:
         response=getDoorStatus()
     else:
         response=returnError('UNKNOWN_COMMAND')
@@ -158,3 +179,4 @@ while True:
                 handleRequest(conn, addr)
             except OSError as e:
                 pass
+
