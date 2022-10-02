@@ -95,24 +95,16 @@ def setCurrentState():
     global openSensor
     global closedSensor
 
-    print("openSensor", openSensor.value())
-    print("closedSensor", closedSensor.value())
-    print("Seconds since last action: "+str(time.time()-lastDoorAction))
-    print(lastDoorAction, IGNORE_SENSORS_AFTER_ACTION_FOR_SECONDS, time.time())
-
     #Ignore sensors after having started the door for a few seconds to give the door enough time to move away from the sensor
     actionThresholdReached=time.time()>lastDoorAction+IGNORE_SENSORS_AFTER_ACTION_FOR_SECONDS
-    print('actionThresholdReached', actionThresholdReached)
 
     #If threshold is reached and door is fully open
     if actionThresholdReached and openSensor.value()==0:
-            print('setCurrentState', 'openSensor.value()==0')
             currentState=CURRENT_DOOR_STATE_OPEN
             targetState=TARGET_DOOR_STATE_OPEN
             
     #If threshold is reached and door is fully closed
     elif actionThresholdReached and closedSensor.value()==0:
-        print('setCurrentState', 'closedSensor.value()==0')
         currentState=CURRENT_DOOR_STATE_CLOSED
         targetState=TARGET_DOOR_STATE_CLOSED
             
@@ -132,11 +124,9 @@ def getDoorStatus():
     #Ensure current state is up to date
     setCurrentState()
 
-    print('getDoorStatus', targetState, currentState)
     return '{"success": true, "currentState": '+str(currentState)+', "targetState": '+str(targetState)+'}'
 
 def returnError(errcode):
-    print('returnError')
     return '{"success": false, "error": "'+errcode+'"}'
     
 
@@ -152,7 +142,7 @@ def handleRequest(conn, address):
         response=startDoor(TARGET_DOOR_STATE_OPEN)
     elif request.find('/?close')==6:
         response=startDoor(TARGET_DOOR_STATE_CLOSED)
-    elif request.find(' ')==6:
+    elif request.find('/?getstatus')==6:
         response=getDoorStatus()
     else:
         response=returnError('UNKNOWN_COMMAND')
