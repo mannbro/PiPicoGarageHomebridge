@@ -4,7 +4,7 @@ Control a garage door using a Raspberry Pi Pico and Homebridge
 # YouTube Video
 To learn more, check out the YouTube video I made about the Garage Door Opener
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/h3uSNCeCGY/0.jpg)](https://www.youtube.com/watch?v=h3uSNCeCGY)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/-h3uSNCeCGY/0.jpg)](https://www.youtube.com/watch?v=-h3uSNCeCGY)
 
 # Setting up the hardware
 In order to control the door and detect if the door is opened or closed, we need to use three pins on the Raspberry Pi Pico.
