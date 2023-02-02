@@ -17,7 +17,7 @@ The relay connects directly between Pin 16 and ground. The Impulse input is conn
 
 Make sure that you have Micropython installed on your Raspberry Pi Pico.
 
-Edit the wifi setting in the main.py file and upload through your favourite tool, such as Thonny.
+Edit the wifi setting in the config.py file and upload config.py and main.py through your favourite tool, such as Thonny.
 
 # Connecting to Homebridge
 
