@@ -4,20 +4,14 @@ Control a garage door using a Raspberry Pi Pico and Homebridge
 # YouTube Video
 To learn more, check out the YouTube video I made about the Garage Door Opener
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/-h3uSNCeCGY/0.jpg)](https://www.youtube.com/watch?v=-h3uSNCeCGY)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/tJPmqTGcAxA/0.jpg)](https://www.youtube.com/watch?v=tJPmqTGcAxA)
 
 # Setting up the hardware
-In order to control the door and detect if the door is opened or closed, we need to use three pins on the Raspberry Pi Pico.
+In order to control the lock, we just need to use one pins on the Raspberry Pi Pico.
 
-The pins that I have chosen are:
+The pin that I have chosen is Pin 16.
 
-Relay: Pin 21
-Sensor to detect if the door is opened: Pin 20
-Sensor to detect if the door is closed: Pin 19
-
-The relay connects directly between Pin 21 and ground. The Impulse input is connected between COM and NO on the relay through a 180 Ohm resistor.
-
-The Open and Closed sensors are connected to Pin 19 and 20 using 10k resistors.
+The relay connects directly between Pin 16 and ground. The Impulse input is connected between COM and NO on the relay.
 
 # Installation on the Pi Pico
 
