@@ -1,0 +1,2 @@
+ssid = 'XXXXXXX'
+password = 'XXXXXXX'
