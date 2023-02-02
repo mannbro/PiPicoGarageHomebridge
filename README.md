@@ -12,7 +12,9 @@ In order to control the door and detect if the door is opened or closed, we need
 The pins that I have chosen are:
 
 Relay: Pin 21
+
 Sensor to detect if the door is opened: Pin 20
+
 Sensor to detect if the door is closed: Pin 19
 
 The relay connects directly between Pin 21 and ground. The Impulse input is connected between COM and NO on the relay through a 180 Ohm resistor.
