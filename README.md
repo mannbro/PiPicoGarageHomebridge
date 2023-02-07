@@ -1,5 +1,5 @@
 # PiPicoGarageHomebridge
-Control a garage door using a Raspberry Pi Pico W, a relay and Homebridge
+Control a garage door using a Raspberry Pi Pico W, a relay, three resistors and Homebridge
 
 # YouTube Video
 To learn more, check out the YouTube video I made about the Garage Door Opener
