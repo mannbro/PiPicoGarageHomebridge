@@ -1,2 +1,0 @@
-ssid = 'XXXXXXX'
-password = 'XXXXXXX'
