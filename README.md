@@ -1,5 +1,9 @@
 # PiPicoGarageHomebridge
-Control a garage door using a Raspberry Pi Pico W, a relay, three resistors and Homebridge
+Control a garage door using a Raspberry Pi Pico W, a relay, three resistors and Homebridge.
+
+This project is meant for garage doors that only have a single input for start / stop / reverse.
+
+Because these doors are quite "stupid", in some cases we'll have to make some assumptions on the door state, but it's still possible to make a fully functioning smart garage door controller with just the one input and two sensors that detect if the door is fully open or closed.
 
 # YouTube Video
 To learn more, check out the YouTube video I made about the Garage Door Opener
