@@ -1,53 +1,21 @@
+import config
 import network
 import socket
 import time
 from uselect import select
 from machine import Pin
+from garagedoor import GarageDoor
 
-#WiFi Settings. Change these before uploading to the Pi Pico
-WIFI_SSID = 'XXXXX'
-WIFI_PASSWORD = 'XXXXX'
-    
-#Set up pins
-OPEN_PIN=19
-CLOSED_PIN=20
-RELAY_PIN=21
-
-#Pulse length in ms
-PULSE_LENGTH=500
-
-#Homekit target and current states
-TARGET_DOOR_STATE_OPEN=0
-TARGET_DOOR_STATE_CLOSED=1
-CURRENT_DOOR_STATE_OPEN = 0
-CURRENT_DOOR_STATE_CLOSED = 1
-CURRENT_DOOR_STATE_OPENING = 2
-CURRENT_DOOR_STATE_CLOSING = 3
-CURRENT_DOOR_STATE_STOPPED = 4
+###CONSTANTS###
 
 
-IGNORE_SENSORS_AFTER_ACTION_FOR_SECONDS=5
-
-#Set initial target and current states
-targetState=TARGET_DOOR_STATE_CLOSED
-currentState=CURRENT_DOOR_STATE_STOPPED
-
-lastDoorAction=time.time()
-
-#Setup pins for relay and sensors
-relay = Pin(RELAY_PIN, Pin.OUT)
-openSensor=Pin(OPEN_PIN, Pin.IN, Pin.PULL_UP)
-closedSensor=Pin(CLOSED_PIN, Pin.IN, Pin.PULL_UP)
 
 wifi = network.WLAN(network.STA_IF)
-
+garageDoor=GarageDoor(config.OPEN_SENSOR_PIN, config.CLOSED_SENSOR_PIN, config.TRIGGER_PIN, config.PULSE_LENGTH_MS, config.OBSTRUCTED_THRESHOLD_SECONDS)
 
 def connectWifi():
-    global wlan
-
-    wifi = network.WLAN(network.STA_IF)
     wifi.active(True)
-    wifi.connect(WIFI_SSID, WIFI_PASSWORD)
+    wifi.connect(config.WIFI_SSID, config.WIFI_PASSWORD)
 
     max_wait = 10
     while wifi.status() != 3:
@@ -70,62 +38,6 @@ s.listen(1)
 
 print('listening on', addr)
 
-def startDoor(newTargetState):
-    global targetState
-    global currentState
-    global lastDoorAction
-    
-    targetState=newTargetState
-    lastDoorAction=time.time()
-
-
-    relay.value(1)
-    time.sleep_ms(PULSE_LENGTH)
-    relay.value(0)
-
-    setCurrentState()
-
-    print('startDoor', targetState, currentState)
-    
-    return getDoorStatus()
-
-def setCurrentState():
-    global targetState
-    global currentState    
-    global openSensor
-    global closedSensor
-
-    #Ignore sensors after having started the door for a few seconds to give the door enough time to move away from the sensor
-    actionThresholdReached=time.time()>lastDoorAction+IGNORE_SENSORS_AFTER_ACTION_FOR_SECONDS
-
-    #If threshold is reached and door is fully open
-    if actionThresholdReached and openSensor.value()==0:
-            currentState=CURRENT_DOOR_STATE_OPEN
-            targetState=TARGET_DOOR_STATE_OPEN
-            
-    #If threshold is reached and door is fully closed
-    elif actionThresholdReached and closedSensor.value()==0:
-        currentState=CURRENT_DOOR_STATE_CLOSED
-        targetState=TARGET_DOOR_STATE_CLOSED
-            
-    #Threshold has not been reached or door is neither fully open or closed
-    else:
-
-        #Set current state based on intention (target state)
-        if targetState==TARGET_DOOR_STATE_OPEN:
-            currentState=CURRENT_DOOR_STATE_OPENING
-        elif targetState==TARGET_DOOR_STATE_CLOSED:
-            currentState=CURRENT_DOOR_STATE_CLOSING
-
-def getDoorStatus():
-    global targetState
-    global currentState
-
-    #Ensure current state is up to date
-    setCurrentState()
-
-    return '{"success": true, "currentState": '+str(currentState)+', "targetState": '+str(targetState)+'}'
-
 def returnError(errcode):
     return '{"success": false, "error": "'+errcode+'"}'
     
@@ -139,13 +51,15 @@ def handleRequest(conn, address):
     print(request)
 
     if request.find('/?open')==6:
-        response=startDoor(TARGET_DOOR_STATE_OPEN)
+        response=garageDoor.start(garageDoor.ACTION_OPEN)
     elif request.find('/?close')==6:
-        response=startDoor(TARGET_DOOR_STATE_CLOSED)
+        response=garageDoor.start(garageDoor.ACTION_CLOSE)
     elif request.find('/?getstatus')==6:
-        response=getDoorStatus()
+        response=garageDoor.getStates()
     else:
         response=returnError('UNKNOWN_COMMAND')
+
+    print(response)
 
     conn.send('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
     conn.send(response)
