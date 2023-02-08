@@ -1,0 +1,39 @@
+fetch('http://example.com/movies.json')
+  .then((response) => response.json())
+  .then((data) => console.log(data));
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test the Garage Door endpoints</title>
+  <script type="text/javascript">
+    CONTROLLER_URL='http://192.168.2.22/'
+
+    document.addEventListener('DOMContentLoaded', function () {
+      document.getElementById('getstates').addEventListener('click', function () {
+        callEndpoint('getstatus')
+      }, false);      
+      document.getElementById('open').addEventListener('click', function () {
+        callEndpoint('open')
+      }, false);      
+      document.getElementById('close').addEventListener('click', function () {
+        callEndpoint('close')
+      }, false);      
+    }, false);    
+    function callEndpoint(endpoint) {
+        fetch(CONTROLLER_URL+'?'+endpoint)
+          .then((response) => response.text())
+          .then((data) => document.getElementById('output').innerHTML=data);
+
+    }
+  </script>
+</head>
+
+<body>
+  <button id="getstates">Get States</button>
+  <button id="open">Open</button>
+  <button id="close">Close</button>
+  <div id="output"></div>
+</body>
+
+</html>

@@ -108,9 +108,10 @@ class GarageDoor():
         return retval
 
     def start(self, newAction):
-        #Don’t start the door if it’s already moving,
-        #only if it’s open, closed or obstructed
-        if(self.isDoorOpen() or self.isDoorClosed() or self.isObstructed()):
+        #Don’t start the door if it’s already moving (and not obstructed),
+        #don't open if it's already open,
+        #don't close if it's already closed
+        if((self.isDoorOpen() and newAction==self.ACTION_CLOSE) or (self.isDoorClosed() and newAction==self.ACTION_OPEN) or self.isObstructed()):
             self.action=newAction
             self.lastActionTime=time.time()
 
