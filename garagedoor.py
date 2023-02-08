@@ -72,8 +72,6 @@ class GarageDoor():
     #If there is an action (not ACTION_NONE) and it’s been running for a longer
     #time than expected, assume the door is obstructed/stuck
     def isObstructed(self):
-        print("isObstructed Debug  ", time.time(), self.lastActionTime, self.obstructedThresholdSeconds)
-        
         return self.action!=self.ACTION_NONE and time.time()>self.lastActionTime+self.obstructedThresholdSeconds
 
     #Return the target state based on current action and sensor states

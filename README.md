@@ -2,7 +2,13 @@
 Control a garage door using a Raspberry Pi Pico and Homebridge
 
 # YouTube Video
-To learn more, check out the YouTube video I made about the Garage Door Opener
+To learn more, check out the YouTube video I made about the Garage Door Opener.
+
+Please Note! The code has been refactored and has changed a lot since this video.
+
+The video is still relevant, but the code walkthrough shows the old code.
+
+A new video will be uploaded shortly. Subscribe to the YouTube Channel and click the bell if you want to be notified when the new video is released.
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/-h3uSNCeCGY/0.jpg)](https://www.youtube.com/watch?v=-h3uSNCeCGY)
 

@@ -3,14 +3,8 @@ import network
 import socket
 import time
 from uselect import select
-from machine import Pin
 from garagedoor import GarageDoor
 
-###CONSTANTS###
-
-
-
-wifi = network.WLAN(network.STA_IF)
 garageDoor=GarageDoor(config.OPEN_SENSOR_PIN, config.CLOSED_SENSOR_PIN, config.TRIGGER_PIN, config.PULSE_LENGTH_MS, config.OBSTRUCTED_THRESHOLD_SECONDS)
 
 def connectWifi():
@@ -27,16 +21,6 @@ def connectWifi():
     ipAddress=status[0]
     print( 'ip = ' + ipAddress )
 
-connectWifi()
-
-#Set up socket and start listening on port 80
-addr = socket.getaddrinfo(wifi.ifconfig()[0], 80)[0][-1]
-s = socket.socket()
-s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-s.bind(addr)
-s.listen(1)
-
-print('listening on', addr)
 
 def returnError(errcode):
     return '{"success": false, "error": "'+errcode+'"}'
@@ -44,11 +28,8 @@ def returnError(errcode):
 
 #Handle an incoming request
 def handleRequest(conn, address):
-    print('Got a connection from %s' % str(addr))
     request = conn.recv(1024)
     request = str(request)
-
-    print(request)
 
     if request.find('/?open')==6:
         response=garageDoor.start(garageDoor.ACTION_OPEN)
@@ -59,11 +40,23 @@ def handleRequest(conn, address):
     else:
         response=returnError('UNKNOWN_COMMAND')
 
-    print(response)
-
     conn.send('HTTP/1.0 200 OK\r\nContent-type: application/json\r\nAccess-Control-Allow-Origin: *\r\n\r\n')
     conn.send(response)
     conn.close()
+
+
+wifi = network.WLAN(network.STA_IF)
+
+connectWifi()
+
+#Set up socket and start listening on port 80
+addr = socket.getaddrinfo(wifi.ifconfig()[0], 80)[0][-1]
+s = socket.socket()
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+s.bind(addr)
+s.listen(1)
+
+print('listening on', addr)
 
 #Main Loop
 while True:
