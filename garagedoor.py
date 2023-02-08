@@ -48,7 +48,7 @@ class GarageDoor():
     def updateAction(self):
         #If either of the end states (open or closed) are reached,
         #set action to none
-        if(self.isDoorClosed() or self.isDoorClosed()):
+        if(self.isDoorOpen() or self.isDoorClosed()):
             self.action=self.ACTION_NONE
             
         #If the door is not in one of the end states, but no action is triggered,
