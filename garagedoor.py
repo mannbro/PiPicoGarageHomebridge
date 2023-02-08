@@ -55,6 +55,7 @@ class GarageDoor():
         #assume that the door is being manually operated in the opposite direction
         #of the previous end state
         elif(self.action==self.ACTION_NONE):
+            self.lastActionTime=time.time()
             if(self.lastSensedState==self.STATE_OPEN):
                 self.action=self.ACTION_CLOSE
             else:
@@ -71,7 +72,9 @@ class GarageDoor():
     #If there is an action (not ACTION_NONE) and it’s been running for a longer
     #time than expected, assume the door is obstructed/stuck
     def isObstructed(self):
-        return self.action!=self.ACTION_NONE and time.time()<self.lastActionTime+self.obstructedThresholdSeconds
+        print("isObstructed Debug  ", time.time(), self.lastActionTime, self.obstructedThresholdSeconds)
+        
+        return self.action!=self.ACTION_NONE and time.time()>self.lastActionTime+self.obstructedThresholdSeconds
 
     #Return the target state based on current action and sensor states
     def getTargetState(self):
@@ -101,7 +104,7 @@ class GarageDoor():
         self.updateAction()
 
         #Return JSON
-        retval='{"success": true, "currentState": '+str(self.getCurrentState())+', "targetState": '+str(self.getTargetState())+', "obstructed": '+str(self.isObstructed()).lower()+'}'
+        retval='{"success": true'+', "currentState": '+str(self.getCurrentState())+', "targetState": '+str(self.getTargetState())+', "obstructed": '+str(self.isObstructed()).lower()+', "debugInfo": {'+'"action": '+str(self.action)+', "isDoorOpen": '+str(self.isDoorOpen()).lower()+', "isDoorClosed": '+str(self.isDoorClosed()).lower()+', "secondsSinceLastAction": '+str(time.time()-self.lastActionTime)+'}'+'}'
         return retval
 
     def start(self, newAction):
