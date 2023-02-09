@@ -76,7 +76,11 @@ class GarageDoor():
 
     #Return the target state based on current action and sensor states
     def getTargetState(self):
-        if(self.action==self.ACTION_OPEN or self.isDoorOpen()):
+        if(self.action==self.ACTION_OPEN):
+            return self.STATE_OPEN
+        elif(self.action==self.ACTION_CLOSE):
+            return self.STATE_CLOSED
+        elif(self.isDoorOpen()):
             return self.STATE_OPEN
         else:
             return self.STATE_CLOSED
@@ -102,7 +106,7 @@ class GarageDoor():
         self.updateAction()
 
         #Return JSON
-        retval='{"success": true'+', "currentState": '+str(self.getCurrentState())+', "targetState": '+str(self.getTargetState())+', "obstructed": '+str(self.isObstructed()).lower()+', "debugInfo": {'+'"action": '+str(self.action)+', "isDoorOpen": '+str(self.isDoorOpen()).lower()+', "isDoorClosed": '+str(self.isDoorClosed()).lower()+', "secondsSinceLastAction": '+str(time.time()-self.lastActionTime)+'}'+'}'
+        retval='{"success": true'+', "currentState": '+str(self.getCurrentState())+', "targetState": '+str(self.getTargetState())+', "obstructed": '+str(int(self.isObstructed()))+', "debugInfo": {'+'"action": '+str(self.action)+', "isDoorOpen": '+str(self.isDoorOpen()).lower()+', "isDoorClosed": '+str(self.isDoorClosed()).lower()+', "secondsSinceLastAction": '+str(time.time()-self.lastActionTime)+'}'+'}'
         return retval
 
     def start(self, newAction):

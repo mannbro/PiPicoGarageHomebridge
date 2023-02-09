@@ -40,6 +40,8 @@ def handleRequest(conn, address):
     else:
         response=returnError('UNKNOWN_COMMAND')
 
+    print(response)
+
     conn.send('HTTP/1.0 200 OK\r\nContent-type: application/json\r\nAccess-Control-Allow-Origin: *\r\n\r\n')
     conn.send(response)
     conn.close()

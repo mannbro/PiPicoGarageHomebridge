@@ -42,6 +42,18 @@
                     }
                 }
             ]
+        },
+        "getObstructionDetected": {
+            "url": "http://YOUR_PI_PICO/?getstatus",
+            "mappers": [
+                {
+                    "type": "jpath",
+                    "parameters": {
+                        "jpath": "$.obstructed",
+                        "index": 0
+                    }
+                }
+            ]
         }
     }
 }
